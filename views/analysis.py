@@ -126,7 +126,7 @@ def _labeled_frame() -> tuple[Optional[pd.DataFrame], Optional[pd.Series]]:
 
 def _no_data_notice(what: str) -> None:
     st.info(
-        f"{what} memerlukan dataset berlabel (fitur + kolom `label`). "
+        f"{what} memerlukan dataset berlabel (kolom `label` atau `banjir`)."
         "Letakkan dataset pelatihan di folder `data/` untuk mengaktifkannya."
     )
 
