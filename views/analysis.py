@@ -165,7 +165,7 @@ def _importance_bar(frame: pd.DataFrame, title: str) -> None:
     ))
     fig.update_layout(title=title, xaxis_title="Importance", yaxis_title="")
     style_figure(fig, height=max(360, 22 * len(frame)))
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
 
 def _feature_importance() -> None:
@@ -311,7 +311,7 @@ def _roc_curve() -> None:
             fig.update_layout(xaxis_title="False Positive Rate",
                               yaxis_title="True Positive Rate")
             style_figure(fig, height=420, showlegend=True)
-            st.plotly_chart(fig, use_container_width=True,
+            st.plotly_chart(fig, width="stretch",
                             config={"displayModeBar": False})
         except Exception as exc:  # noqa: BLE001
             st.warning(f"Gagal membuat ROC curve: {exc}")
@@ -341,7 +341,7 @@ def _confusion_matrix() -> None:
         fig.update_layout(annotations=annotations, yaxis_autorange="reversed",
                           xaxis_title="Prediksi", yaxis_title="Aktual")
         style_figure(fig, height=420)
-        st.plotly_chart(fig, use_container_width=True,
+        st.plotly_chart(fig, width="stretch",
                         config={"displayModeBar": False})
 
         tn, fp, fn, tp = z[0, 0], z[0, 1], z[1, 0], z[1, 1]
