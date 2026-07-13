@@ -207,39 +207,77 @@ def _permutation_importance() -> None:
 # --------------------------------------------------------------------------- #
 # SHAP
 # --------------------------------------------------------------------------- #
-def _shap_summary() -> None:
+def _shap_summary():
+
     X, _ = _labeled_frame()
-    with card("SHAP Summary", "Kontribusi fitur terhadap prediksi"):
+
+    with card(
+        "SHAP Summary",
+        "Kontribusi fitur terhadap prediksi"
+    ):
+
         if X is None:
             _no_data_notice("Analisis SHAP")
             return
+
         try:
+
             import shap
 
             model = load_model()
+
+            sample = X.sample(
+                min(len(X), 300),
+                random_state=42
+            )
+
             with st.spinner("Menghitung nilai SHAP..."):
-                sample = X.sample(min(len(X), 400), random_state=42)
+
                 explainer = shap.TreeExplainer(model)
-                values = explainer.shap_values(sample)
-                shap_pos = values[1] if isinstance(values, list) else values
-                if shap_pos.ndim == 3:      # (n, features, classes)
-                    shap_pos = shap_pos[:, :, 1]
 
-            mean_abs = np.abs(shap_pos).mean(axis=0)
-            frame = pd.DataFrame({"feature": sample.columns, "importance": mean_abs})
-            _importance_bar(frame, "Mean |SHAP value|")
+                shap_values = explainer.shap_values(sample)
 
-            with st.expander("Lihat SHAP beeswarm plot"):
+                if isinstance(shap_values, list):
+                    shap_values = shap_values[1]
+
+                if len(np.array(shap_values).shape) == 3:
+                    shap_values = shap_values[:, :, 1]
+
+            importance = np.abs(shap_values).mean(axis=0)
+
+            frame = pd.DataFrame({
+                "feature": sample.columns,
+                "importance": importance
+            })
+
+            _importance_bar(frame, "Mean Absolute SHAP Value")
+
+            with st.expander("Tampilkan SHAP Beeswarm"):
+
                 import matplotlib.pyplot as plt
 
-                shap.summary_plot(shap_pos, sample, show=False)
-                st.pyplot(plt.gcf(), clear_figure=True)
+                shap.summary_plot(
+                    shap_values,
+                    sample,
+                    show=False
+                )
+
+                st.pyplot(
+                    plt.gcf(),
+                    clear_figure=True
+                )
+
         except ModuleNotFoundError:
-            st.warning("Paket `shap` belum terpasang. Jalankan: pip install shap")
-        except Exception as exc:  # noqa: BLE001
-            st.warning(f"Gagal menghitung SHAP: {exc}")
 
+            st.info(
+                "Library SHAP belum terpasang."
+            )
 
+        except Exception as e:
+
+            st.warning(
+                f"SHAP tidak dapat dijalankan.\n\n{e}"
+            )
 # --------------------------------------------------------------------------- #
 # ROC curve
 # --------------------------------------------------------------------------- #
