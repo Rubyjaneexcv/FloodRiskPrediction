@@ -1,0 +1,5 @@
+Letakkan data Anda di sini:
+  jabodetabek_final.geojson   -> batas kecamatan Jabodetabek (WGS84)
+  Flood_Risk_Prediction.csv   -> probabilitas banjir per kecamatan (opsional, untuk Dashboard)
+Kolom Indonesia (Kecamatan_x, Kab_Kota, Lintang, Bujur, Elevasi, Kemiringan_Lereng,
+NDVI, Kelembapan_Tanah, Tutupan_Lahan) sudah dikenali otomatis.

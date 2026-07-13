@@ -1,0 +1,335 @@
+/* ======================================================================
+   Flood Risk Prediction System — Custom professional theme
+   Inspired by ArcGIS Dashboard / Power BI / Material Design
+   ====================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg: #F6F8FC;
+    --sidebar: #143B69;
+    --sidebar-accent: #1E4E85;
+    --sidebar-hover: rgba(255, 255, 255, 0.08);
+    --primary: #2563EB;
+    --primary-dark: #1D4ED8;
+    --card: #FFFFFF;
+    --text: #0F2540;
+    --text-muted: #64748B;
+    --border: #E7EDF5;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 6px 24px rgba(15, 37, 64, 0.06);
+    --shadow-hover: 0 12px 32px rgba(15, 37, 64, 0.12);
+    --success: #16A34A;
+    --danger: #EF4444;
+}
+
+/* ---------- Global ---------------------------------------------------- */
+html, body, [class*="css"], .stApp, [data-testid="stAppViewContainer"] {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    color: var(--text);
+}
+
+.stApp { background: var(--bg); }
+
+[data-testid="stAppViewContainer"] > .main { background: var(--bg); }
+
+.block-container {
+    padding: 2.2rem 3rem 3rem 3rem !important;
+    max-width: 1480px;
+}
+/* Breathing room between stacked rows of cards */
+div[data-testid="stHorizontalBlock"] { margin-bottom: 16px; gap: 1.1rem; }
+.metric-card, .status-card { margin-bottom: 6px; }
+
+/* Hide default Streamlit chrome — but KEEP the sidebar expand control usable.
+   (Hiding the whole header previously also hid the "reopen sidebar" arrow.) */
+#MainMenu, footer { visibility: hidden; height: 0; }
+header[data-testid="stHeader"] { background: transparent; box-shadow: none; }
+/*
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"] {
+    display: none !important;
+}
+*/
+div[data-testid="stSidebarNav"] { display: none; }
+
+/* Working sidebar toggle. Keep BOTH the in-sidebar collapse control and the
+   (when-collapsed) expand control visible and styled. The expand control is
+   pinned to the top-left so it can always be found to reopen the menu. */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"],
+[data-testid="stExpandSidebarButton"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 100000 !important;
+}
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"],
+[data-testid="stExpandSidebarButton"] {
+    position: fixed !important;
+    top: 12px;
+    left: 12px;
+}
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="collapsedControl"] button,
+[data-testid="stExpandSidebarButton"] button,
+[data-testid="stSidebarCollapseButton"] button,
+[data-testid="stSidebarCollapseButton"] {
+    background: #FFFFFF !important;
+    color: #143B69 !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    box-shadow: var(--shadow) !important;
+    width: 38px; height: 38px;
+}
+
+/* Smooth scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #C7D2E1; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #A9B8CC; }
+
+/* ---------- Sidebar --------------------------------------------------- */
+section[data-testid="stSidebar"] {
+    background: var(--sidebar);
+    border-right: none;
+    width: 290px !important;
+}
+section[data-testid="stSidebar"] > div { background: var(--sidebar); }
+section[data-testid="stSidebar"] * { color: #DCE7F5; }
+
+.sidebar-brand {
+    display: flex; align-items: center; gap: 12px;
+    padding: 6px 8px 18px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    margin-bottom: 14px;
+}
+.sidebar-brand .logo {
+    width: 46px; height: 46px; border-radius: 12px;
+    background: rgba(37, 99, 235, 0.22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+}
+.sidebar-brand .brand-text { line-height: 1.15; }
+.sidebar-brand .brand-title { font-size: 19px; font-weight: 800; color: #FFFFFF; }
+.sidebar-brand .brand-sub { font-size: 12px; color: #9DB4D2; font-weight: 500; }
+
+.sidebar-section-label {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #7D97BC; font-weight: 700; margin: 14px 6px 6px 6px;
+}
+
+/* Sidebar nav buttons (secondary = inactive, primary = active) */
+section[data-testid="stSidebar"] .stButton > button {
+    width: 100%;
+    text-align: left;
+    justify-content: flex-start;
+    background: transparent;
+    color: #C6D6EC;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: none;
+    transition: all 0.15s ease;
+}
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background: var(--sidebar-hover);
+    color: #FFFFFF;
+}
+section[data-testid="stSidebar"] .stButton > button[kind="primary"] {
+    background: var(--primary);
+    color: #FFFFFF;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+section[data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
+    background: var(--primary-dark);
+}
+
+.sidebar-footer {
+    margin-top: 26px; padding-top: 12px;
+    font-size: 11px; color: #7D97BC; text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    pointer-events: none;   /* never intercept clicks on the About button */
+}
+
+/* ---------- Header ---------------------------------------------------- */
+.app-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+}
+.app-header .header-title { font-size: 30px; font-weight: 800; color: var(--text); margin: 0; }
+.app-header .header-sub { font-size: 15px; color: var(--text-muted); margin-top: 2px; }
+.app-header .header-meta {
+    text-align: right; font-size: 14px; color: var(--text); font-weight: 700;
+}
+.app-header .header-meta .meta-time { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+/* ---------- Cards ----------------------------------------------------- */
+.frp-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    padding: 22px 24px;
+    margin-bottom: 22px;
+}
+.frp-card.tight { padding: 18px 20px; }
+
+/* KPI metric card */
+.metric-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    height: 100%;
+}
+.metric-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.metric-head { display: flex; align-items: center; justify-content: space-between; }
+.metric-label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.metric-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 17px;
+    background: rgba(37, 99, 235, 0.10);
+}
+.metric-value { font-size: 32px; font-weight: 800; color: var(--text); margin: 6px 0 2px; line-height: 1.1; }
+.metric-delta { font-size: 13px; font-weight: 700; }
+.metric-delta.up { color: var(--success); }
+.metric-delta.down { color: var(--danger); }
+.metric-spark { margin-top: 8px; }
+
+/* Status card */
+.status-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    padding: 18px 20px; height: 100%;
+}
+.status-card .status-label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+.status-card .status-value { font-size: 22px; font-weight: 800; color: var(--text); margin-top: 4px; }
+.status-card .status-value.ok { color: var(--success); }
+.status-card .status-sub { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+/* Section title */
+.section-title { margin: 18px 0 16px; }
+.section-title .section-title-main { font-size: 20px; font-weight: 800; color: var(--text); }
+.section-title .section-title-sub { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
+
+/* Card header row (title + optional right note) */
+.card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.card-head .card-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.card-head .card-note { font-size: 13px; color: var(--text-muted); }
+
+/* ---------- Risk badges ---------------------------------------------- */
+.risk-badge {
+    display: inline-block; padding: 4px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; line-height: 1.4;
+}
+
+/* Top-risk preview card */
+.risk-card {
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+    padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; height: 100%;
+}
+.risk-card .rc-top { display: flex; align-items: center; gap: 12px; }
+.risk-card .rc-icon {
+    width: 42px; height: 42px; border-radius: 12px; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+}
+.risk-card .rc-name { font-size: 17px; font-weight: 800; color: var(--text); }
+.risk-card .rc-city { font-size: 13px; color: var(--text-muted); }
+.risk-card .rc-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.risk-card .rc-prob { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+
+/* Key/value info rows */
+.info-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px dashed var(--border);
+}
+.info-row:last-child { border-bottom: none; }
+.info-row .info-key { font-size: 14px; color: var(--text-muted); }
+.info-row .info-val { font-size: 14px; color: var(--text); font-weight: 700; }
+
+/* Legend */
+.legend-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.legend-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+.legend-label { font-size: 14px; color: var(--text); font-weight: 600; }
+.legend-range { font-size: 13px; color: var(--text-muted); margin-left: auto; }
+
+/* ---------- Footer ---------------------------------------------------- */
+.app-footer {
+    text-align: center; color: var(--text-muted); font-size: 13px;
+    padding: 22px 0 6px; margin-top: 10px; border-top: 1px solid var(--border);
+}
+
+/* ---------- Streamlit widget polish ---------------------------------- */
+.stButton > button {
+    border-radius: var(--radius-sm); font-weight: 600; font-family: 'Inter', sans-serif;
+    border: 1px solid var(--border);
+}
+div[data-testid="stMainBlockContainer"] button[kind="primary"] {
+    background: var(--primary); border: none;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+div[data-testid="stMainBlockContainer"] button[kind="primary"]:hover { background: var(--primary-dark); }
+
+div[data-testid="stSelectbox"] label, div[data-testid="stSlider"] label {
+    font-weight: 600; color: var(--text); font-size: 14px;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] { gap: 6px; border-bottom: 1px solid var(--border); }
+.stTabs [data-baseweb="tab"] {
+    font-weight: 600; color: var(--text-muted); padding: 8px 16px;
+    border-radius: 10px 10px 0 0;
+}
+.stTabs [aria-selected="true"] { color: var(--primary) !important; background: rgba(37,99,235,0.06); }
+
+/* Dataframe */
+[data-testid="stDataFrame"] { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+
+/* Metric native fallback */
+[data-testid="stMetric"] {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+}
+
+/* Spinner colour */
+.stSpinner > div { border-top-color: var(--primary) !important; }
+
+/* Alerts spacing */
+.stAlert { border-radius: var(--radius-sm); }
+
+/* Remove extra top gap on first element */
+.element-container:first-child { margin-top: 0; }
+
+/* ---------- Bordered container = chart / map card -------------------- */
+[data-testid="stVerticalBlockBorderWrapper"] {
+    background: var(--card);
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border) !important;
+    padding: 20px 22px;
+}
+[data-testid="stVerticalBlockBorderWrapper"] [data-testid="stVerticalBlockBorderWrapper"] {
+    box-shadow: none;
+    padding: 12px 14px;
+}
+/* Folium map inside a card fills the width cleanly */
+iframe { border-radius: var(--radius-sm); }
+
+/*
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"] {
+    display: none !important;
+}
+*/

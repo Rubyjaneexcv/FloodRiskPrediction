@@ -1,0 +1,4 @@
+Letakkan artefak model Anda di sini:
+  best_random_forest.pkl   -> model Random Forest terlatih (joblib/pickle)
+  feature_list.pkl         -> daftar 20 nama fitur URUT saat pelatihan
+Atau jalankan dari root proyek:  python scripts/generate_sample_data.py
