@@ -66,31 +66,63 @@ def render() -> None:
 # --------------------------------------------------------------------------- #
 @st.cache_data(show_spinner=False)
 def _labeled_frame() -> tuple[Optional[pd.DataFrame], Optional[pd.Series]]:
-    """Locate a labelled dataset (features + binary label) for evaluation.
-
-    Searches the prediction CSV and any CSV in ``data/``. Returns ``(None, None)``
-    when no suitable dataset is present.
     """
+    Mencari dataset berlabel (features + target).
+
+    Mendukung kolom:
+    - label
+    - banjir
+    """
+
     feature_list = load_feature_list()
-    paths = [config.PREDICTION_CSV, *sorted(config.DATA_DIR.glob("*.csv"))]
-    seen: set[str] = set()
+
+    paths = [
+        config.PREDICTION_CSV,
+        *sorted(config.DATA_DIR.glob("*.csv"))
+    ]
+
+    seen = set()
+
     for path in paths:
+
         if not path.exists() or str(path) in seen:
             continue
+
         seen.add(str(path))
+
         try:
             df = pd.read_csv(path)
-        except Exception:  # noqa: BLE001
+        except Exception:
             continue
-        label_col = resolve_column(df.columns, "label")
-        present = [f for f in feature_list if f in df.columns]
-        if label_col and len(present) >= max(3, len(feature_list) // 2):
-            X = df.reindex(columns=feature_list)
-            X = X.apply(pd.to_numeric, errors="coerce").fillna(0.0)
-            y = pd.to_numeric(df[label_col], errors="coerce").fillna(0).astype(int)
-            return X, y
-    return None, None
 
+        df.columns = [str(c).strip() for c in df.columns]
+
+        label_col = (
+            resolve_column(df.columns, "label")
+            or ("banjir" if "banjir" in df.columns else None)
+        )
+
+        if label_col is None:
+            continue
+
+        present = [f for f in feature_list if f in df.columns]
+
+        if len(present) < max(3, len(feature_list)//2):
+            continue
+
+        X = df.reindex(columns=feature_list)
+
+        X = X.apply(pd.to_numeric, errors="coerce").fillna(0)
+
+        y = (
+            pd.to_numeric(df[label_col], errors="coerce")
+            .fillna(0)
+            .astype(int)
+        )
+
+        return X, y
+
+    return None, None
 
 def _no_data_notice(what: str) -> None:
     st.info(
